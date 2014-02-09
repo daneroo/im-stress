@@ -39,9 +39,13 @@ function thingerOld(thread, a, cb) {
 //  global termination context
 var count = 0;
 var TT = function(){
-	this.startMili=+new Date();
-	this.startNano = process.hrtime();
+	this.reset = function(){
+		this.startMili=+new Date();
+		// this.startNano = process.hrtime();
+	}
+	this.reset();
 	this.deltaMili = function(){
+		// return this.deltaNano()/1e6;
 		return +new Date() - this.startMili;
 	}
 	this.deltaNano = function(){
@@ -59,7 +63,7 @@ var threadTimer = new TT();
 //runtime status / per thread
 var statii = {};
 var termination = function() {
-	var delta = threadTimer.deltaNano();
+	var delta = threadTimer.deltaMili();
 	// console.log('delta', delta);
 	return count < totalCount;
 };
@@ -75,15 +79,16 @@ function progress(thId, status) {
 }
 // generator to bind thread id
 var iteration = function(thId) {
+	// reuse this time to avoid constructor.
+	var invocationTimer = new TT();
 	return function(itCallback) {
 		var param = count++;
 		progress(thId, '-' + param);
-		var invocationStart = +new Date();
-		// var invocationStart = process.hrtime();
+		// var invocationStart = +new Date();
+		invocationTimer.reset();
 		thinger(thId, param, function(err, res) {
-			var delta = +new Date() - invocationStart;
-			// var delta = process.hrtime(invocationStart);
-			// delta = (delta[0] + delta[1]/1e9)/1e3;
+			// var delta = +new Date() - invocationStart;
+			var delta = invocationTimer.deltaMili();
 			stats.push(delta);
 			// accumulate or test reults
 			progress(thId, '+' + param);
@@ -112,8 +117,8 @@ function manyThreads(nThreads) {
 		console.log('stats', JSON.stringify({
 			th: nThreads,
 			n: stats.length,
-			μ: stats.μ().toFixed(2)+' ms/req',
-			σ: stats.σ().toFixed(2)+' ms/req',
+			μ: stats.μ().toFixed(4)+' ms/req',
+			σ: stats.σ().toFixed(4)+' ms/req',
 			τ: (1000*nThreads/stats.μ()).toFixed(2)+' req/ms'
 		}));
 	};
