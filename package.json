@@ -1,0 +1,28 @@
+{
+  "name": "im-stress",
+  "version": "0.0.0",
+  "description": "Stress test tool like ab (apache bench)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daneroo/im-stress.git"
+  },
+  "keywords": [
+    "load",
+    "stress",
+    "test"
+  ],
+  "author": "Daniel Lauzon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/daneroo/im-stress/issues"
+  },
+  "homepage": "https://github.com/daneroo/im-stress",
+  "dependencies": {
+    "async": "~0.2.10",
+    "q": "~1.0.0"
+  }
+}
