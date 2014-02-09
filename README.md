@@ -13,6 +13,7 @@ Would like to specify the number of threads, requests (total or per thread), and
 * measure throughput (incremental and global)
 * dead periods ina scenario
 * cluster workers for client ? compare with ab.
+* is client cpu bound ?
 
 Make sure our iteration function never produces errors for the sake of async's loops.
 
