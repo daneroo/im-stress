@@ -6,16 +6,16 @@ var Stats = require('fast-stats').Stats;
 var request = require('request');
 
 var threads = 2;
-var totalCount = 1000000;
+var totalCount = 10000;
 function thinger(thread, a, cb) {
 	var url = 'http://localhost:8000/';
 	// var url = 'http://localhost:9000/api/awesomeThings';
 	// var url = 'http://copa-do-mundo.herokuapp.com/api/awesomeThings';
 	// process.nextTick(function(){
-	if (1) setImmediate(function(){
+	if (0) setImmediate(function(){
 		cb();
 	});
-	if (0) request.get(url, function(error, response, body) {
+	if (1) request.get(url, function(error, response, body) {
 		// console.log(body);
 		// console.log('http return code',response.statusCode);
 		cb();
@@ -113,13 +113,14 @@ var oneThread = function(id) {
 
 function manyThreads(nThreads) {
 	var finalResult = function(err, results) {
-		console.log('all thingers done',threadTimer.deltaInSeconds());
+		var deltaS = threadTimer.deltaInSeconds();
+		console.log('all thingers done',deltaS);
 		console.log('stats', JSON.stringify({
 			th: nThreads,
 			n: stats.length,
 			μ: stats.μ().toFixed(4)+' ms/req',
 			σ: stats.σ().toFixed(4)+' ms/req',
-			τ: (1000*nThreads/stats.μ()).toFixed(2)+' req/ms'
+			τ: (stats.length/deltaS).toFixed(2)+' req/s'
 		}));
 	};
 	var tasks = [];
