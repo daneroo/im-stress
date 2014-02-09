@@ -23,6 +23,7 @@
   "homepage": "https://github.com/daneroo/im-stress",
   "dependencies": {
     "async": "~0.2.10",
-    "q": "~1.0.0"
+    "q": "~1.0.0",
+    "fast-stats": "0.0.2"
   }
 }

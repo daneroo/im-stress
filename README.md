@@ -8,7 +8,10 @@ Would like to specify the number of threads, requests (total or per thread), and
 * The url may be a function returning url.
 * The termination criterion could be time, instead of number of requests.
 * How about tests!
-* use async or Q (promises)
+* use async (or Q (promises))
+* throttling
+* measure throughput (incremental and global)
+* dead periods ina scenario
 
 ## Notes
 
