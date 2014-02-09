@@ -6,13 +6,13 @@ var Stats = require('fast-stats').Stats;
 var request = require('request');
 
 var threads = 2;
-
+var totalCount = 1000000;
 function thinger(thread, a, cb) {
 	var url = 'http://localhost:8000/';
 	// var url = 'http://localhost:9000/api/awesomeThings';
 	// var url = 'http://copa-do-mundo.herokuapp.com/api/awesomeThings';
 	// process.nextTick(function(){
-	setImmediate(function(){
+	if (1) setImmediate(function(){
 		cb();
 	});
 	if (0) request.get(url, function(error, response, body) {
@@ -38,14 +38,30 @@ function thingerOld(thread, a, cb) {
 
 //  global termination context
 var count = 0;
-var start = +new Date();
+var TT = function(){
+	this.startMili=+new Date();
+	this.startNano = process.hrtime();
+	this.deltaMili = function(){
+		return +new Date() - this.startMili;
+	}
+	this.deltaNano = function(){
+		var delta = process.hrtime(this.startNano);
+		return delta[0]*1e9 + delta[1];
+	}
+	this.deltaInSeconds = function(){
+		return this.deltaMili()/1e3;
+		// return this.deltaNano()/1e9;
+	}
+}
+// var threadStart = +new Date();
+var threadTimer = new TT();
 
 //runtime status / per thread
 var statii = {};
 var termination = function() {
-	var delta = +new Date() - start;
+	var delta = threadTimer.deltaNano();
 	// console.log('delta', delta);
-	return count < 1000;
+	return count < totalCount;
 };
 
 // these are for respose times
@@ -62,9 +78,12 @@ var iteration = function(thId) {
 	return function(itCallback) {
 		var param = count++;
 		progress(thId, '-' + param);
-		var start = +new Date();
+		var invocationStart = +new Date();
+		// var invocationStart = process.hrtime();
 		thinger(thId, param, function(err, res) {
-			var delta = +new Date() - start;
+			var delta = +new Date() - invocationStart;
+			// var delta = process.hrtime(invocationStart);
+			// delta = (delta[0] + delta[1]/1e9)/1e3;
 			stats.push(delta);
 			// accumulate or test reults
 			progress(thId, '+' + param);
@@ -80,6 +99,7 @@ var oneThread = function(id) {
 	return function(thCallback) {
 		var threadResult = function(err) {
 			// console.log(id, 'thingers done', (err)?err:'');
+			console.log(id, 'thingers done', threadTimer.deltaInSeconds());
 			thCallback(err);
 		};
 		async.whilst(termination, iteration(id), threadResult);
@@ -88,13 +108,14 @@ var oneThread = function(id) {
 
 function manyThreads(nThreads) {
 	var finalResult = function(err, results) {
-		console.log('all thingers done');
-		console.log('stats', {
+		console.log('all thingers done',threadTimer.deltaInSeconds());
+		console.log('stats', JSON.stringify({
 			th: nThreads,
 			n: stats.length,
-			μ: stats.μ().toFixed(2),
-			σ: stats.σ().toFixed(2)
-		});
+			μ: stats.μ().toFixed(2)+' ms/req',
+			σ: stats.σ().toFixed(2)+' ms/req',
+			τ: (1000*nThreads/stats.μ()).toFixed(2)+' req/ms'
+		}));
 	};
 	var tasks = [];
 	for (var i = 0; i < nThreads; i++) {
@@ -103,4 +124,4 @@ function manyThreads(nThreads) {
 	async.parallel(tasks, finalResult);
 }
 
-manyThreads(2);
+manyThreads(threads);

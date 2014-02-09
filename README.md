@@ -25,6 +25,7 @@ Try server cluster w/ 2 CPUS, and threadCount 2 on dirac.
 
 * [Bestie.js benchmark.js](http://benchmarkjs.com/)
 * [While loop with promises](http://stackoverflow.com/questions/17217736/while-loop-with-promises)
+* [async_bench](https://github.com/mcollina/async_bench) uses async.waterfall util to time
 * [http-bench (coffeescript)](https://github.com/clintronx/http-benchmark)
 * [siege home](http://www.joedog.org/siege-home/)
 * [Install siege on OSX](http://jason.pureconcepts.net/2011/09/installing-siege-mac-os-x-lion/)
