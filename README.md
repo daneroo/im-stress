@@ -12,6 +12,13 @@ Would like to specify the number of threads, requests (total or per thread), and
 * throttling
 * measure throughput (incremental and global)
 * dead periods ina scenario
+* cluster workers for client ? compare with ab.
+
+Make sure our iteration function never produces errors for the sake of async's loops.
+
+Try server cluster w/ 2 CPUS, and threadCount 2 on dirac.
+
+	NODE_DEBUG=cluster node server.js
 
 ## Notes
 
