@@ -12,7 +12,7 @@ Would like to specify the number of threads, requests (total or per thread), and
 * throttling
 * measure throughput (incremental and global)
 * dead periods ina scenario
-* cluster workers for client ? compare with ab or siege
+* cluster workers for client ? compare with ab or [siege]()
 * is client cpu bound ?
 
 Make sure our iteration function never produces errors for the sake of async's loops.
@@ -23,4 +23,8 @@ Try server cluster w/ 2 CPUS, and threadCount 2 on dirac.
 
 ## Notes
 
-[While loop with promises](http://stackoverflow.com/questions/17217736/while-loop-with-promises)
+* [Bestie.js benchmark.js](http://benchmarkjs.com/)
+* [While loop with promises](http://stackoverflow.com/questions/17217736/while-loop-with-promises)
+* [http-bench (coffeescript)](https://github.com/clintronx/http-benchmark)
+* [siege home](http://www.joedog.org/siege-home/)
+* [Install siege on OSX](http://jason.pureconcepts.net/2011/09/installing-siege-mac-os-x-lion/)
