@@ -5,17 +5,17 @@ var async = require('async');
 var Stats = require('fast-stats').Stats;
 var request = require('request');
 
-var threads = 2;
-var totalCount = 10000;
+var threads = 4;
+var totalCount = 1000000;
 function thinger(thread, a, cb) {
 	var url = 'http://localhost:8000/';
 	// var url = 'http://localhost:9000/api/awesomeThings';
 	// var url = 'http://copa-do-mundo.herokuapp.com/api/awesomeThings';
 	// process.nextTick(function(){
-	if (0) setImmediate(function(){
+	if (1) setImmediate(function(){
 		cb();
 	});
-	if (1) request.get(url, function(error, response, body) {
+	if (0) request.get(url, function(error, response, body) {
 		// console.log(body);
 		// console.log('http return code',response.statusCode);
 		cb();
