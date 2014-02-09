@@ -13,6 +13,9 @@ if (cluster.isMaster) {
   });
   cluster.on('exit', function(worker, code, signal) {
     console.log('worker ' + worker.process.pid + ' died');
+    // Replace the dead worker,
+    // we're not sentimental
+    cluster.fork();
   });
 } else {
   // Workers can share any TCP connection
