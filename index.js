@@ -4,6 +4,8 @@
 var async = require('async');
 var Stats = require('fast-stats').Stats;
 var request = require('request');
+var Timer = require('./lib/im-timer.js').MiliTimer;
+var Timer = require('./lib/im-timer.js').NanoTimer;
 
 var threads = 4;
 var totalCount = 1000000;
@@ -38,32 +40,14 @@ function thingerOld(thread, a, cb) {
 
 //  global termination context
 var count = 0;
-var TT = function(){
-	this.reset = function(){
-		this.startMili=+new Date();
-		// this.startNano = process.hrtime();
-	}
-	this.reset();
-	this.deltaMili = function(){
-		// return this.deltaNano()/1e6;
-		return +new Date() - this.startMili;
-	}
-	this.deltaNano = function(){
-		var delta = process.hrtime(this.startNano);
-		return delta[0]*1e9 + delta[1];
-	}
-	this.deltaInSeconds = function(){
-		return this.deltaMili()/1e3;
-		// return this.deltaNano()/1e9;
-	}
-}
+
 // var threadStart = +new Date();
-var threadTimer = new TT();
+var threadTimer = new Timer();
 
 //runtime status / per thread
 var statii = {};
 var termination = function() {
-	var delta = threadTimer.deltaMili();
+	var delta = threadTimer.delta();
 	// console.log('delta', delta);
 	return count < totalCount;
 };
@@ -80,7 +64,7 @@ function progress(thId, status) {
 // generator to bind thread id
 var iteration = function(thId) {
 	// reuse this time to avoid constructor.
-	var invocationTimer = new TT();
+	var invocationTimer = new Timer();
 	return function(itCallback) {
 		var param = count++;
 		progress(thId, '-' + param);
@@ -88,7 +72,7 @@ var iteration = function(thId) {
 		invocationTimer.reset();
 		thinger(thId, param, function(err, res) {
 			// var delta = +new Date() - invocationStart;
-			var delta = invocationTimer.deltaMili();
+			var delta = invocationTimer.delta();
 			stats.push(delta);
 			// accumulate or test reults
 			progress(thId, '+' + param);
