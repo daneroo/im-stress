@@ -1,5 +1,8 @@
 "use strict"
 
+// Meant to use Benchmark to replace our loops,
+// but that won't cut it, neither for parallell exec, nor clustering
+
 var async = require('async');
 var Stats = require('fast-stats').Stats;
 var Benchmark = require('benchmark');

@@ -4,17 +4,17 @@
 var async = require('async');
 var Stats = require('fast-stats').Stats;
 var request = require('request');
-var Timer = require('./lib/im-timer.js').MiliTimer;
-var Timer = require('./lib/im-timer.js').NanoTimer;
+var Timer = require('./lib/im-timer.js').MiliTimer; // or NanoTimer
 
-var threads = 4;
+var threads = 1;
 var totalCount = 1000000;
-function thinger(thread, a, cb) {
+
+function thinger(cb) {
 	var url = 'http://localhost:8000/';
 	// var url = 'http://localhost:9000/api/awesomeThings';
 	// var url = 'http://copa-do-mundo.herokuapp.com/api/awesomeThings';
 	// process.nextTick(function(){
-	if (1) setImmediate(function(){
+	if (1) setImmediate(function() {
 		cb();
 	});
 	if (0) request.get(url, function(error, response, body) {
@@ -24,15 +24,15 @@ function thinger(thread, a, cb) {
 	});
 }
 
-function thingerOld(thread, a, cb) {
+function thingerOld(cb) {
 	// includes max
 	function getRandomInt(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
 	var delay = getRandomInt(10, 20);
-	console.log(thread, '-', a);
+	// console.log(thread, '-', a);
 	setTimeout(function() {
-		console.log(thread, '+', a);
+		// console.log(thread, '+', a);
 		// cb(null, a * 2);
 		cb((a === 5) ? "Error 9" : null, a * 2);
 	}, delay);
@@ -47,7 +47,8 @@ var threadTimer = new Timer();
 //runtime status / per thread
 var statii = {};
 var termination = function() {
-	var delta = threadTimer.delta();
+	// do the time in an eventHandler
+	// var delta = threadTimer.delta();
 	// console.log('delta', delta);
 	return count < totalCount;
 };
@@ -61,27 +62,15 @@ function progress(thId, status) {
 	statii[thId] = status;
 	// console.log(statii);
 }
-// generator to bind thread id
-var iteration = function(thId) {
-	// reuse this time to avoid constructor.
-	var invocationTimer = new Timer();
-	return function(itCallback) {
-		var param = count++;
-		progress(thId, '-' + param);
-		// var invocationStart = +new Date();
-		invocationTimer.reset();
-		thinger(thId, param, function(err, res) {
-			// var delta = +new Date() - invocationStart;
-			var delta = invocationTimer.delta();
-			stats.push(delta);
-			// accumulate or test reults
-			progress(thId, '+' + param);
 
-			//  should actually ignore errors, or theis thread will stop.			
-			itCallback(err);
-		});
-	};
-}
+// where do these go ?
+// 	var param = count++;
+// stats.push(delta);
+
+var iteration = require('./lib/timedInvoker').invokerWrapper(thinger, function(delta,err,result) {
+	stats.push(delta);
+	count++;
+});
 
 // function generator - not invoked immediately
 var oneThread = function(id) {
@@ -91,20 +80,20 @@ var oneThread = function(id) {
 			console.log(id, 'thingers done', threadTimer.deltaInSeconds());
 			thCallback(err);
 		};
-		async.whilst(termination, iteration(id), threadResult);
+		async.whilst(termination, iteration, threadResult);
 	}
 };
 
 function manyThreads(nThreads) {
 	var finalResult = function(err, results) {
 		var deltaS = threadTimer.deltaInSeconds();
-		console.log('all thingers done',deltaS);
+		console.log('all thingers done', deltaS);
 		console.log('stats', JSON.stringify({
 			th: nThreads,
 			n: stats.length,
-			μ: stats.μ().toFixed(4)+' ms/req',
-			σ: stats.σ().toFixed(4)+' ms/req',
-			τ: (stats.length/deltaS).toFixed(2)+' req/s'
+			μ: stats.μ().toFixed(4) + ' ms/req',
+			σ: stats.σ().toFixed(4) + ' ms/req',
+			τ: (stats.length / deltaS).toFixed(2) + ' req/s'
 		}));
 	};
 	var tasks = [];
