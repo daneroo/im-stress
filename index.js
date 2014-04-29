@@ -7,17 +7,17 @@ var request = require('request');
 var Timer = require('./lib/im-timer.js').MiliTimer; // or NanoTimer
 
 var threads = 1;
-var totalCount = 1000000;
+var totalCount = 2000;
 
 function thinger(cb) {
 	var url = 'http://localhost:8000/';
 	// var url = 'http://localhost:9000/api/awesomeThings';
 	// var url = 'http://copa-do-mundo.herokuapp.com/api/awesomeThings';
 	// process.nextTick(function(){
-	if (1) setImmediate(function() {
+	if (0) setImmediate(function() {
 		cb();
 	});
-	if (0) request.get(url, function(error, response, body) {
+	if (1) request.get(url, function(error, response, body) {
 		// console.log(body);
 		// console.log('http return code',response.statusCode);
 		cb();
